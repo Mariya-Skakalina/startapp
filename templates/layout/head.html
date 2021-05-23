@@ -1,0 +1,11 @@
+<header>
+    <p id="start-head">Startapp</p>
+    <div>
+    {% if user %}
+        {{user.name}}
+    {% elif user is None %}
+        <a href="#">Войти</a>
+    {% endif %}
+        
+    </div>
+</header>

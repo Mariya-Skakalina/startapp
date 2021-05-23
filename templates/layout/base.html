@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+ <head>
+   <title>!DOCTYPE</title>
+   <meta charset="utf-8">
+   {% load static %}
+   <link href={% static 'css/style.css' %} rel="stylesheet">
+ </head>
+ <body>
+  {% include 'layout/head.html' %}
+  {% block content %}
+  {% endblock %}
+ </body> 
+</html>
