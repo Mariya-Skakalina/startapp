@@ -1,9 +1,10 @@
-from celery import shared_task
+from startapp.celery import app
 from django.conf import settings
 from django.core.mail import send_mail
 
 
 
-@shared_task
-def email_send(subject, message,  **kwargs):
-    send_mail(subject, message, kwargs['instance'].email, [settings.EMAIL_HOST_USER])
+@app.task(bind=True)
+def email_send(self, subject, message,  email):
+    print('ok')
+    send_mail(subject, message, email, [settings.EMAIL_HOST_USER])

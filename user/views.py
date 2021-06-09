@@ -1,5 +1,6 @@
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import CreateView, FormView
+from django.views.generic.detail import DetailView
 from django.http import HttpResponse, HttpResponseRedirect
 from hmac import compare_digest as compare_hash
 from django.conf import settings
@@ -19,6 +20,7 @@ class RegisterUserView(CreateView):
     def post(self, request, *args, **kwargs):
         form = UserRegisterForm(request.POST)
         if form.is_valid():
+            User.objects.create(**form.cleaned_data)
             return HttpResponseRedirect('/')
         else:
             form = UserRegisterForm()
@@ -32,7 +34,14 @@ class LoginUserView(FormView):
     form_class = UserLoginForm
     success_url = '/'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['account'] = self.request.account
+        return context
+    
+
     def form_valid(self, form):
+        print('ok')
         user = User.objects.get(email=form.cleaned_data['email'])
         if user:
             if compare_hash(user.password, crypt.crypt(str(form.cleaned_data['password']), settings.SECRET_KEY)):
@@ -52,6 +61,8 @@ class LoginUserView(FormView):
                 response = HttpResponseRedirect('/')
                 response.set_cookie("jwt", access_token)
                 return response
+            else:
+                return HttpResponseRedirect('/user/login')
         return super().form_valid(form)
 
 
@@ -60,5 +71,13 @@ class ActivateUserViews(TemplateView):
 
     def get(self, request, *args, **kwargs):
         print(request)
-        print(args)
-        print(kwargs)
+
+
+class UserDetailView(DetailView):
+    model = User
+    template_name = "user/detail.html"
+
+    def get_context_data(self, *args, **kwargs):
+        kwargs['account'] = self.request.account
+        context = super().get_context_data(**kwargs)
+        return context

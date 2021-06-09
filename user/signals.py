@@ -21,4 +21,4 @@ def hash_password(sender,  **kwargs):
 def code_activation(sender,  **kwargs):
     subject = "Письмо для активации почтового сервера"
     message = kwargs['instance'].code_activate
-    email_send.delay(subject, message, **kwargs )
+    email_send.delay(subject, message, kwargs['instance'].email)

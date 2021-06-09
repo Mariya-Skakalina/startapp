@@ -13,19 +13,22 @@ class AuthMiddleware:
         self.get_response = get_response
 
     def __call__(self, request, *args, **kwargs):
-        response = self.get_response(request)
-        print(request.path)
-        if '/admin' in request.path:
-            
+
+        request.account = None
+        response = self.get_response(request)     
+        
+        if '/admin' in request.path or '/user/register/' in request.path or '/user/login/' in request.path:
             return response
         else:
             try:
-                p = request.COOKIES["jwt"]
-                token= redis_instance.get(p)
+                p = request.COOKIES.get('jwt')
+                if not p:
+                    return response
+                token = redis_instance.get(p)
                 try:
                     jwt_user = jwt.decode(str(p), settings.SECRET_KEY, algorithms=["HS256"])
                     user = User.objects.get(email = jwt_user['email'])
-                    request.user = user
+                    request.account = user
                 except jwt.ExpiredSignatureError:
                     try:
                         jwt_user = jwt.decode(token.decode(), settings.SECRET_KEY, algorithms=["HS256"])
@@ -37,16 +40,13 @@ class AuthMiddleware:
                         )
                         redis_instance.set(access_token, token)
                         user = User.objects.get(email = jwt_user['email'])
-                        request.user = user
+                        request.account = user
                     except jwt.ExpiredSignatureError:
-                        request.user = None
-
+                        request.account = None
 
             except KeyError:
                 token = None
-                request.user = None
+                request.account = None
+                return self.get_response(request)
 
-        
-        print(response)
-
-        return response
+        return self.get_response(request)

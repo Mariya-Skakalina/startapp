@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import ProjectList,ProjectDeleteView
+from .views import *
 
 urlpatterns = [
     path('', ProjectList.as_view()),
