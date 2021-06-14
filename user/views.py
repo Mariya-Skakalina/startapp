@@ -1,7 +1,6 @@
-from django.views.generic.base import TemplateView
-from django.views.generic.edit import CreateView, FormView
+from django.views.generic import CreateView, FormView, TemplateView, ListView
 from django.views.generic.detail import DetailView
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from hmac import compare_digest as compare_hash
 from django.conf import settings
 import datetime
@@ -41,7 +40,6 @@ class LoginUserView(FormView):
     
 
     def form_valid(self, form):
-        print('ok')
         user = User.objects.get(email=form.cleaned_data['email'])
         if user:
             if compare_hash(user.password, crypt.crypt(str(form.cleaned_data['password']), settings.SECRET_KEY)):
@@ -81,3 +79,28 @@ class UserDetailView(DetailView):
         kwargs['account'] = self.request.account
         context = super().get_context_data(**kwargs)
         return context
+
+
+class UserList(ListView):
+    model = User
+    template_name = 'user/all_users.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['account'] = self.request.account
+        return context
+
+
+# class DateView(CreateView):
+#     model = User
+
+#     def post(self, request, *args, **kwargs):
+#         print(request.body)
+#         form = DateOfForm(request.body)
+#         if form.is_valid():
+#             print(form.cleaned_data)
+#             # User.objects.create(**form.cleaned_data)
+#             User.objects.filter(id=request.account.id).update(age=form.cleaned_data)
+#             return JsonResponse("message")
+#         else:
+#             form = DateOfForm()

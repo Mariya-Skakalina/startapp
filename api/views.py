@@ -1,20 +1,21 @@
-from rest_framework.serializers import Serializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import DateOfBirthSerializer
-from rest_framework.permissions import IsAuthenticated
 from user.models import User
-
+from rest_framework.parsers import JSONParser
 # Create your views here.
 class DateOfBirthView(APIView):
-    # permission_classes = [IsAuthenticated]
-
+    parser_classes = (JSONParser, )
     def post(self, request, **kwargs):
+        # print(request.body)
+        # print(request.data)
+        # print(request.user)
         serializer = DateOfBirthSerializer(data=request.data)
-        print(request.data)
+        # print(serializer)
         if serializer.is_valid():
-            serializer.save()
+            ids = request.user.id
+            User.objects.filter(id=ids).update(age=serializer.data['age'])
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     

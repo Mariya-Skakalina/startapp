@@ -89,11 +89,11 @@ DATABASES = {
 }
 
 REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES':(
-        'rest_framework.permissions.IsAuthenticated',
-    )
-}
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'api.authenticate.ExampleAuthentication',
+    ]
 
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -160,3 +160,4 @@ else:
 
 CELERY_BROKER_URL = "redis://127.0.0.1:6379/0"
 
+DATE_INPUT_FORMATS = ['%Y-%m-%d']

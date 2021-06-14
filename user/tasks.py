@@ -6,5 +6,4 @@ from django.core.mail import send_mail
 
 @app.task(bind=True)
 def email_send(self, subject, message,  email):
-    print('ok')
     send_mail(subject, message, email, [settings.EMAIL_HOST_USER])

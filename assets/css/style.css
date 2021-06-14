@@ -30,3 +30,7 @@ header{
 #save_date {
     display: none;
 }
+
+.proj {
+    display: flex;
+}

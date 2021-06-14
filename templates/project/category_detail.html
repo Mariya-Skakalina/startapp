@@ -1,0 +1,22 @@
+{% extends 'layout/base.html' %}
+
+{% block content %}
+<h1>{{ object.name }}</h1>
+<div>
+    <div class="category">
+        {% for category in categories %}
+                <p class="room"{% if category.id == object.id %}id = "soon"{% endif %}>
+                    <a href="/category/{{category.id}}">{{category.name}}</a>
+                </p>
+            {% endfor %}
+    </div>
+    <div>
+        {% for app in projects %}
+        <h2>
+            <a href="/{{app.id}}">{{ app.name }}</a>
+        </h2>
+        <p>{{app.description}}</p>
+    {% endfor %}
+    </div>
+</div>
+{% endblock  %}

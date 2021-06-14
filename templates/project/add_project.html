@@ -1,0 +1,11 @@
+{% extends 'layout/base.html' %}
+
+{% block content %}
+<h2>Добавить проект</h2>
+<form method="post" action="{% url 'add_project' %}" enctype="multipart/form-data">
+{% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Сохранить">
+</form>  
+
+{% endblock content %}

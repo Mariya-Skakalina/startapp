@@ -1,4 +1,6 @@
 from django.db import models
+from user.models import User, Skill
+
 
 # Create your models here.
 class Category(models.Model):
@@ -15,6 +17,8 @@ class Project(models.Model):
     name = models.CharField("Название проекта", max_length = 254)
     description = models.TextField("Описание проекта")
     category = models.ForeignKey(Category, verbose_name="Категория", on_delete=models.CASCADE)
+    teg =models.ManyToManyField(Skill, verbose_name="Теги", related_name="tags")
+    author = models.ForeignKey(User, verbose_name="Автор", on_delete=models.CASCADE, default=None, related_name="project_user")
 
     class Meta:
         verbose_name = "Проект"

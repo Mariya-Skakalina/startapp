@@ -3,17 +3,12 @@
 {% block content %}
     <h2>Проекты</h2>
     <div class="proj">
-        <div class="category">
-            {% for category in categories %}
-                <p><a href="/category/{{category.id}}">{{category.name}}</a></p>
-            {% endfor %}
-        </div>
+
         <div>
             {% for app in object_list %}
                 <h2>
                     <a href="{{app.id}}">{{ app.name }}</a>
                 </h2>
-                <p>{{app.description}}</p>
             {% endfor %}
         </div>
     </div>
