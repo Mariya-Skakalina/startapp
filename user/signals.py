@@ -8,6 +8,8 @@ import string
 import random
 import crypt
 
+
+# Хэширование пароля
 @receiver(pre_save, sender = User)
 def hash_password(sender,  **kwargs):
     letters_and_digits = string.ascii_letters + string.digits
@@ -16,7 +18,7 @@ def hash_password(sender,  **kwargs):
     kwargs['instance'].password = crypt.crypt(str(kwargs['instance'].password), settings.SECRET_KEY)
     
     
-
+# Код для активации почты
 @receiver(post_save, sender = User)
 def code_activation(sender,  **kwargs):
     subject = "Письмо для активации почтового сервера"

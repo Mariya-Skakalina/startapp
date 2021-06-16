@@ -1,0 +1,11 @@
+{% extends 'layout/base.html' %}
+
+{% block content %}
+<h2>Мои проекты</h2>
+{% for app in object_list %}
+    <h3>
+        <a href="/{{app.id}}">{{ app.name }}</a>
+    </h3>
+    <p>{{ app.description }}</p>
+{% endfor %}
+{% endblock %}

@@ -1,8 +1,10 @@
 from django.conf import settings
+from django.http.request import HttpRequest
 import datetime
 from django.http.response import Http404
 import redis
 import jwt
+from django.urls import resolve
 from django.utils.deprecation import MiddlewareMixin
 from .models import User
 
@@ -11,22 +13,20 @@ redis_instance = redis.StrictRedis(host=settings.REDIS_HOST, port=settings.REDIS
 
 
 class AuthMiddleware(MiddlewareMixin):
-    # def __init__(self, get_response):
-    #     self.get_response = get_response
 
-    def process_request(self, request):
-
+    def process_request(self, request: HttpRequest):
         request.account = None
-        # response = self.get_response(request)     
-        
+        current_url = resolve(request.path_info).url_name
+        auth_list = ['detailUser']
         if '/admin' in request.path or '/user/register/' in request.path or '/user/login/' in request.path:
-            # return response
-            pass
+            return 
         else:
             try:
                 p = request.COOKIES.get('jwt')
-                if not p:
+                if not p and current_url in auth_list:
                     raise Http404()
+                elif not p:
+                    return
                 token = redis_instance.get(p)
                 try:
                     jwt_user = jwt.decode(str(p), settings.SECRET_KEY, algorithms=["HS256"])
@@ -51,6 +51,3 @@ class AuthMiddleware(MiddlewareMixin):
                 token = None
                 request.account = None
                 raise Http404()
-                # return self.get_response(request)
-
-        # return self.get_response(request)

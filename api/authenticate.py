@@ -1,4 +1,3 @@
-from django.db import models
 from user.models import User
 from rest_framework import authentication
 from rest_framework import exceptions
@@ -7,11 +6,10 @@ import datetime
 import redis
 import jwt
 
-
-
-
 redis_instance = redis.StrictRedis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=0)
 
+
+# Пользовательская проверка аунтефикации
 class ExampleAuthentication(authentication.BaseAuthentication):
     def authenticate(self, request):
         username = request.COOKIES.get('jwt')

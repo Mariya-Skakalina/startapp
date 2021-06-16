@@ -7,18 +7,26 @@
 <p>{{ object.lastname }}</p>
 <hr>
 <p>Дата рождения</p>
+    {% if  object.age %}
+        <p>{{ object.age }}</p>
+    {% else %}
     <form method="post" id="date_post">
         {% csrf_token %}
-        <input type="date" id="date_of_birth">
+        <input type="date" id="date_of_birth" >
+
         <input type="button" id="save_date" value="Сохранить">
-    </form> 
-    {% comment %} <input type="date" id="date_of_birth">
-    <input type="button" id="save_date" value="Сохранить">  {% endcomment %}
+    </form>
+    {% endif %}
 <hr>
 <diV>
 <p>Навыки</p>
-{% comment %} <form>
-<input type="text">
-</form>  {% endcomment %}
+    <form method="post" id="skills_post">
+        {% csrf_token %}
+        <input type="text" id="skill_name">
+        <input type="button" id="save_skills" value="Сохранить">
+    </form>
+<div id="skills_all">
+
+</div>
 </div>
 {% endblock %}

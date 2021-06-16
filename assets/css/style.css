@@ -12,10 +12,35 @@ a {
 }
 
 header{
+    margin-top: 1em !important;
+    margin-bottom: 2em !important;;
+}
+
+.head {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     align-items: center;
 }
+
+#profile {
+    display: none;
+    position: fixed;
+    left: 73vw;
+}
+
+#profile > a {
+    display: block;
+}
+
+#profile_user {
+    cursor: pointer;
+}
+
+#content, header {
+    width: 63vw;
+    margin: auto;
+}
+
 
 #start-head {
     font-family: 'CormorantGaramond-Bold';
@@ -33,4 +58,10 @@ header{
 
 .proj {
     display: flex;
+}
+
+#upd_dlt > a {
+    border: 1px solid #000;
+    border-radius: 5px;
+    padding: 10px;
 }
