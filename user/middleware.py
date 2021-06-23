@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.http.request import HttpRequest
-import datetime
-from django.http.response import Http404
+from .services import WorkWithToken
+from django.http.response import Http404, HttpResponse
 import redis
 import jwt
 from django.urls import resolve
@@ -30,20 +30,26 @@ class AuthMiddleware(MiddlewareMixin):
                 token = redis_instance.get(p)
                 try:
                     jwt_user = jwt.decode(str(p), settings.SECRET_KEY, algorithms=["HS256"])
-                    user = User.objects.get(email = jwt_user['email'])
-                    request.account = user
+                    user = User.objects.get(email=jwt_user['email'])
+                    request.account = {
+                        "id": user.id,
+                        "name": user.name,
+                        "lastname": user.lastname,
+                        "email": user.email,
+                        "token": p
+                    }
                 except jwt.ExpiredSignatureError:
                     try:
                         jwt_user = jwt.decode(token.decode(), settings.SECRET_KEY, algorithms=["HS256"])
-                        access_token = jwt.encode(
-                            {"email": jwt_user['email'],
-                            "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=30)},
-                            settings.SECRET_KEY,
-                            algorithm="HS256"
-                        )
-                        redis_instance.set(access_token, token)
-                        user = User.objects.get(email = jwt_user['email'])
-                        request.account = user
+                        tks = WorkWithToken(request)
+                        user = User.objects.get(email=jwt_user['email'])
+                        request.account = {
+                            "id": user.id,
+                            "name": user.name,
+                            "lastname": user.lastname,
+                            "email": user.email,
+                            "token": tks.update_custom_token(jwt_user, token)
+                        }
                     except jwt.ExpiredSignatureError:
                         request.account = None
 
@@ -51,3 +57,8 @@ class AuthMiddleware(MiddlewareMixin):
                 token = None
                 request.account = None
                 raise Http404()
+
+    def process_response(self, request, response):
+        access_token = request.account['token']
+        response.set_cookie("jwt", access_token)
+        return response

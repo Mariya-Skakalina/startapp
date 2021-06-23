@@ -3,8 +3,10 @@
 {% block content %}
 <h2>Профиль</h2>
 <hr>
-<p>{{ object.name }}</p>
-<p>{{ object.lastname }}</p>
+<div class="main-info">
+    <p>{{ object.name }}</p>
+    <p>{{ object.lastname }}</p>
+</div>
 <hr>
 <p>Дата рождения</p>
     {% if  object.age %}

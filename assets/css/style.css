@@ -41,7 +41,6 @@ header{
     margin: auto;
 }
 
-
 #start-head {
     font-family: 'CormorantGaramond-Bold';
     font-size: 3em;
@@ -50,6 +49,7 @@ header{
 #content > h2 {
     text-align: center;
     font-size: 2em;
+    padding: 1em 0em;
 }
 
 #save_date {
@@ -64,4 +64,8 @@ header{
     border: 1px solid #000;
     border-radius: 5px;
     padding: 10px;
+}
+
+.ctx {
+    padding-bottom: 2em;
 }
