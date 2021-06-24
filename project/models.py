@@ -1,4 +1,6 @@
 from django.db import models
+from django.urls import reverse
+
 from user.models import User, Skill
 
 
@@ -31,3 +33,15 @@ class Project(models.Model):
 
     def get_absolute_url(self):
         return reverse("Project_detail", kwargs={"pk": self.pk})
+
+
+class Task(models.Model):
+    name = models.TextField('Описание задачи')
+    project = models.ForeignKey(Project, verbose_name='Проект', on_delete=models.CASCADE, blank=True)
+
+    class Meta:
+        verbose_name = "Задача"
+        verbose_name_plural = "Задачи"
+
+    def __str__(self):
+        return self.name

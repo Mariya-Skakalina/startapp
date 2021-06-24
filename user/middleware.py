@@ -58,7 +58,8 @@ class AuthMiddleware(MiddlewareMixin):
                 request.account = None
                 raise Http404()
 
-    def process_response(self, request, response):
-        access_token = request.account['token']
-        response.set_cookie("jwt", access_token)
-        return response
+    # def process_response(self, request, response):
+        # access_token = request.account['token']
+        # if access_token:
+        #     response.set_cookie("jwt", access_token)
+        # return response

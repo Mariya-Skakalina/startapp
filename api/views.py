@@ -35,7 +35,6 @@ class SkillAddViews(APIView):
 
     def post(self, request, **kwargs):
         serializer = SkillAddSerializer(data=request.data)
-        print(request.data)
         if serializer.is_valid():
             user = User.objects.get(id=request.user.id)
             Skill.objects.create(name=serializer.data['name'], user_skills=user)
@@ -54,6 +53,5 @@ class SkillDelete(APIView):
 
     def delete(self, request, pk, format=None):
         skill = self.get_object(pk)
-        print(skill)
         skill.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)

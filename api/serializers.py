@@ -12,3 +12,6 @@ class SkillAddSerializer(serializers.Serializer):
 class SkillAllSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     name = serializers.CharField()
+
+
+

@@ -1,13 +1,13 @@
-from django.views.generic import CreateView, FormView, TemplateView, ListView
-from django.views.generic.detail import DetailView
-from django.http import HttpResponseRedirect
-from hmac import compare_digest as compare_hash
-from project.models import Project
-import redis
 import crypt
 
-from .forms import *
+from hmac import compare_digest as compare_hash
+from django.http import HttpResponseRedirect
+from django.conf import settings
+from django.views.generic import CreateView, FormView, TemplateView, ListView, DetailView
+
 from .models import User
+from project.models import Project
+from .forms import UserRegisterForm, UserLoginForm
 from .services import WorkWithToken
 
 
@@ -24,9 +24,6 @@ class RegisterUserView(CreateView):
             return HttpResponseRedirect('/')
         else:
             form = UserRegisterForm()
-
-
-redis_instance = redis.StrictRedis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=0)
 
 
 # Авторизация пользователя
