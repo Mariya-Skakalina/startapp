@@ -5,7 +5,7 @@
 
         <div>
         {% if account %}
-            <p id="profile_user">{{account}}</p>
+            <p id="profile_user">{{account.name}}</p>
 
         {% elif account is None %}
             <a href={% url 'login' %}>Войти</a>

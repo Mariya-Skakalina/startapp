@@ -1,14 +1,14 @@
-from django.views.generic import CreateView, FormView, TemplateView, ListView
-from django.views.generic.detail import DetailView
-from django.http import HttpResponseRedirect
-from hmac import compare_digest as compare_hash
-from project.models import Project
-import datetime
-import redis
 import crypt
-import jwt
-from .forms import *
+
+from hmac import compare_digest as compare_hash
+from django.http import HttpResponseRedirect
+from django.conf import settings
+from django.views.generic import CreateView, FormView, TemplateView, ListView, DetailView
+
 from .models import User
+from project.models import Project
+from .forms import UserRegisterForm, UserLoginForm
+from .services import WorkWithToken
 
 
 # Регистрация пользователя
@@ -26,9 +26,6 @@ class RegisterUserView(CreateView):
             form = UserRegisterForm()
 
 
-redis_instance = redis.StrictRedis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=0)
-
-
 # Авторизация пользователя
 class LoginUserView(FormView):
     template_name = 'user/login.html'
@@ -44,22 +41,8 @@ class LoginUserView(FormView):
         user = User.objects.get(email=form.cleaned_data['email'])
         if user:
             if compare_hash(user.password, crypt.crypt(str(form.cleaned_data['password']), settings.SECRET_KEY)):
-                access_token = jwt.encode(
-                    {"email": user.email,
-                    "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=30)},
-                    settings.SECRET_KEY,
-                    algorithm="HS256"
-                )
-                refresh_token = jwt.encode(
-                    {"email": user.email,
-                    "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=10080)},
-                    settings.SECRET_KEY,
-                    algorithm="HS256"
-                )
-                redis_instance.set(access_token, refresh_token)
-                response = HttpResponseRedirect('/')
-                response.set_cookie("jwt", access_token)
-                return response
+                token = WorkWithToken(self.request)
+                return token.write_token_in_cookies(user)
             else:
                 return HttpResponseRedirect('/user/login')
         return super().form_valid(form)

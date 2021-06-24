@@ -1,9 +1,9 @@
 {% extends 'layout/base.html' %}
 
 {% block content %}
-    <div>
-    <h1>{{ object.name }}</h1>
-    <p>{{ object.description }}</p>
+    <div class="ctx">
+        <h1>{{ object.name }}</h1>
+        <p>{{ object.description }}</p>
     </div>
     {% if account.id == object.author.id %}
         <div id="upd_dlt">

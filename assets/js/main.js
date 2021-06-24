@@ -28,13 +28,16 @@ document.querySelector('#profile_user').addEventListener('click', ()=>{
 let elem = document.querySelector('#date_of_birth')
 let save_date = document.querySelector('#save_date')
 
-elem.addEventListener('click', () => {
-    save_date.style.display = 'block'
-})
+if (elem) {
+    elem.addEventListener('click', () => {
+        save_date.style.display = 'block'
+    })
+}
 
 const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-save_date.onclick = async (e) => {
+if (save_date) {
+    save_date.onclick = async (e) => {
     e.preventDefault();
 
     let response = await fetch(document.location.origin + '/api/date/',{
@@ -52,6 +55,7 @@ save_date.onclick = async (e) => {
 
     let result = await response.json();
 };
+}
 
 let save_skills = document.querySelector('#save_skills')
 
