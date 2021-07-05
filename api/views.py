@@ -1,57 +1,48 @@
-from django.http import Http404
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
 from .serializers import *
 from user.models import User, Skill
-from rest_framework.parsers import JSONParser
-
-
-# Редактировать дату рождения
-class DateOfBirthView(APIView):
-    parser_classes = (JSONParser, )
-
-    def post(self, request, **kwargs):
-        serializer = DateOfBirthSerializer(data=request.data)
-        if serializer.is_valid():
-            ids = request.user.id
-            User.objects.filter(id=ids).update(age=serializer.data['age'])
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+from .view_all.base_views import BaseDelete, BaseAllView, BaseAddViews
 
 
 # Вывести все навыки
-class SkillAllView(APIView):
+class SkillAllView(BaseAllView):
+    model = Skill
+    serializer = SkillAllSerializer
 
-    def get(self, request, format=None):
-        skill = Skill.objects.all()
-        serializer = SkillAllSerializer(skill, many=True)
-        return Response(serializer.data)
+    def name_field(self, pk):
+        filter_name = self.model.objects.filter(user_skills_id=pk)
+        return filter_name
 
 
 # Добавить навык
-class SkillAddViews(APIView):
-    parser_classes = (JSONParser,)
-
-    def post(self, request, **kwargs):
-        serializer = SkillAddSerializer(data=request.data)
-        if serializer.is_valid():
-            user = User.objects.get(id=request.user.id)
-            Skill.objects.create(name=serializer.data['name'], user_skills=user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class SkillAddViews(BaseAddViews):
+    model = Skill
+    related_model = User
+    serializer = SkillAddSerializer
+    field = 'skill_user'
 
 
 # Удалить навык
-class SkillDelete(APIView):
+class SkillDelete(BaseDelete):
+    model = Skill
+    related_model = User
+    field = 'skill_user'
 
-    def get_object(self, pk):
-        try:
-            return Skill.objects.get(pk=pk)
-        except Skill.DoesNotExist:
-            raise Http404
 
-    def delete(self, request, pk, format=None):
-        skill = self.get_object(pk)
-        skill.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+# Добавить тег
+# class TagAddViews(APIView):
+#     parser_classes = (JSONParser,)
+#
+#     def post(self, request, **kwargs):
+#         serializer = TagAddSerializer(data=request.data)
+#         if serializer.is_valid():
+#             project = Project.objects.get(id=request.data['id_project'])
+#             tag_name = request.data['name']
+#             # tag = Tag.objects.get_or_create(name=tag_name)
+#             if Tag.objects.filter(name=tag_name).exists():
+#                 project.tag.add(tag_name.id)
+#             else:
+#                 tag = Tag(name=request.data['name'])
+#                 tag.save()
+#                 project.tag.add(tag)
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

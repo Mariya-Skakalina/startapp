@@ -1,10 +1,11 @@
 from django.db import models
+from django.urls import reverse
 
 
 # Моель пользователя
 class User(models.Model):
     name = models.CharField("Имя", max_length=50)
-    lastname = models.CharField("Фамилия", max_length = 150)
+    lastname = models.CharField("Фамилия", max_length=150)
     age = models.DateField("Дата рождения", null=True, blank=True)
     email = models.EmailField("Электронная почта", max_length=254, unique=True)
     abouth_self = models.TextField("О себе", blank=True, null=True)
@@ -25,8 +26,12 @@ class User(models.Model):
 
 # Модель навыков
 class Skill(models.Model):
-    name = models.CharField("Навык", max_length = 150)
-    user_skills = models.ForeignKey(User, verbose_name="Пользователь", on_delete=models.CASCADE, related_name='skill_user')
+    name = models.CharField("Навык", max_length=150)
+    user_skills = models.ForeignKey(User,
+                                    verbose_name="Пользователь",
+                                    null=True,
+                                    on_delete=models.CASCADE,
+                                    related_name='skill_user')
 
     class Meta:
         verbose_name = "Навык"

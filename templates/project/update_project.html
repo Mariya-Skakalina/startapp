@@ -2,10 +2,20 @@
 
 {% block content %}
 <h2>Добавить проект</h2>
-<form method="post" enctype="multipart/form-data">
-{% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Сохранить">
-</form>  
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Сохранить">
+    </form>
+
+    <h1>Тег</h1>
+    <form method="post" id="tag_post">
+        {% csrf_token %}
+        <input type="text" id="tag_name" id_project={{ object.id }}>
+        <input type="button" id="save_tag" value="Сохранить">
+    </form>
+
+    <div id="tag_all" id_prc={{ object.id }}></div>
 
 {% endblock content %}
