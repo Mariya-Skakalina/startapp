@@ -1,16 +1,17 @@
-from django.views.generic import CreateView, FormView, TemplateView, ListView
-from django.views.generic.detail import DetailView
-from django.http import HttpResponseRedirect, JsonResponse
-from hmac import compare_digest as compare_hash
-from django.conf import settings
-import datetime
-import redis
 import crypt
-import jwt
-from .forms import *
-from .models import User
 
-# Create your views here.
+from hmac import compare_digest as compare_hash
+from django.http import HttpResponseRedirect
+from django.conf import settings
+from django.views.generic import CreateView, FormView, TemplateView, ListView, DetailView
+
+from .models import User
+from project.models import Project
+from .forms import UserRegisterForm, UserLoginForm
+from .services import WorkWithToken
+
+
+# Регистрация пользователя
 class RegisterUserView(CreateView):
     model = User
     template_name = 'user/register.html'
@@ -25,9 +26,7 @@ class RegisterUserView(CreateView):
             form = UserRegisterForm()
 
 
-redis_instance = redis.StrictRedis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=0)
-
-
+# Авторизация пользователя
 class LoginUserView(FormView):
     template_name = 'user/login.html'
     form_class = UserLoginForm
@@ -37,33 +36,19 @@ class LoginUserView(FormView):
         context = super().get_context_data(**kwargs)
         context['account'] = self.request.account
         return context
-    
 
     def form_valid(self, form):
         user = User.objects.get(email=form.cleaned_data['email'])
         if user:
             if compare_hash(user.password, crypt.crypt(str(form.cleaned_data['password']), settings.SECRET_KEY)):
-                access_token = jwt.encode(
-                    {"email": user.email,
-                    "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=30)},
-                    settings.SECRET_KEY,
-                    algorithm="HS256"
-                )
-                refresh_token = jwt.encode(
-                    {"email": user.email,
-                    "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=10080)},
-                    settings.SECRET_KEY,
-                    algorithm="HS256"
-                )
-                redis_instance.set(access_token, refresh_token)
-                response = HttpResponseRedirect('/')
-                response.set_cookie("jwt", access_token)
-                return response
+                token = WorkWithToken(self.request)
+                return token.write_token_in_cookies(user)
             else:
                 return HttpResponseRedirect('/user/login')
         return super().form_valid(form)
 
 
+# Активация почты
 class ActivateUserViews(TemplateView):
     template_name = 'user/activate.html'
 
@@ -71,6 +56,7 @@ class ActivateUserViews(TemplateView):
         print(request)
 
 
+# Личная информация пользователя
 class UserDetailView(DetailView):
     model = User
     template_name = "user/detail.html"
@@ -81,6 +67,7 @@ class UserDetailView(DetailView):
         return context
 
 
+# Список всех пользователей
 class UserList(ListView):
     model = User
     template_name = 'user/all_users.html'
@@ -91,16 +78,15 @@ class UserList(ListView):
         return context
 
 
-# class DateView(CreateView):
-#     model = User
+# Список всех проектов пользователя
+class UserMyProject(ListView):
+    model = Project
+    template_name = 'user/user_projects.html'
 
-#     def post(self, request, *args, **kwargs):
-#         print(request.body)
-#         form = DateOfForm(request.body)
-#         if form.is_valid():
-#             print(form.cleaned_data)
-#             # User.objects.create(**form.cleaned_data)
-#             User.objects.filter(id=request.account.id).update(age=form.cleaned_data)
-#             return JsonResponse("message")
-#         else:
-#             form = DateOfForm()
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['account'] = self.request.account
+        return context
+
+    def get_queryset(self):
+        return self.model.objects.filter(author=self.request.account)

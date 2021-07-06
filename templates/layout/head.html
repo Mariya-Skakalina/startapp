@@ -1,12 +1,21 @@
 <header>
-    <a href="/" id="start-head">Startup</p>
-    <div>
-    {% if account %}
-    <a href="/user/{{ account.id }}">{{account}}</a>
-        
-    {% elif account is None %}
-        <a href={% url 'login' %}>Войти</a>
-    {% endif %}
-        
+
+    <div class="head">
+        <a href="/" id="start-head">Startup</a>
+
+        <div>
+        {% if account %}
+            <p id="profile_user">{{account.name}}</p>
+
+        {% elif account is None %}
+            <a href={% url 'login' %}>Войти</a>
+        {% endif %}
+
+        </div>
+    </div>
+    <div id="profile">
+        <a href="/user/{{ account.id }}">Редактировать профиль</a>
+        <a href="{% url 'add_project' %}">Добавить проект</a>
+        <a href="{% url 'my_project' %}">Мои проекты</a>
     </div>
 </header>

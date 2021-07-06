@@ -1,6 +1,7 @@
 from django.db import models
 
-# Создание пользователя
+
+# Моель пользователя
 class User(models.Model):
     name = models.CharField("Имя", max_length=50)
     lastname = models.CharField("Фамилия", max_length = 150)
@@ -22,9 +23,10 @@ class User(models.Model):
         return reverse("User_detail", kwargs={"pk": self.pk})
 
 
+# Модель навыков
 class Skill(models.Model):
     name = models.CharField("Навык", max_length = 150)
-    user_skills = models.ForeignKey(User, verbose_name="Пользователь", on_delete=models.CASCADE)
+    user_skills = models.ForeignKey(User, verbose_name="Пользователь", on_delete=models.CASCADE, related_name='skill_user')
 
     class Meta:
         verbose_name = "Навык"
