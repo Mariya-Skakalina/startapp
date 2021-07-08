@@ -1,4 +1,6 @@
-document.querySelector('#profile_user').addEventListener('click', ()=>{
+let profile_user = document.querySelector('#profile_user')
+if (profile_user) {
+    profile_user.addEventListener('click', ()=>{
     let profile = document.querySelector('#profile')
     let pr_style = getComputedStyle(profile)
     if (getComputedStyle(profile).display == 'none') {
@@ -7,21 +9,7 @@ document.querySelector('#profile_user').addEventListener('click', ()=>{
         profile.style.display = 'none'
     }
 })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+}
 
 
 
@@ -36,6 +24,7 @@ if (elem) {
 
 const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
+//Добавление даты рождения
 if (save_date) {
     save_date.onclick = async (e) => {
     e.preventDefault();
@@ -59,11 +48,14 @@ if (save_date) {
 
 let save_skills = document.querySelector('#save_skills')
 
-save_skills.addEventListener('click', ()=>{
+//Добавление навыка
+if(save_skills) {
+    save_skills.addEventListener('click', ()=>{
     fetch(document.location.origin + '/api/skill_add/',{
         method: 'post',
         credentials: 'same-origin',
         body: JSON.stringify({
+            'id_project': Number(document.querySelector('#skill_name').getAttribute('id_project')),
             'name': document.getElementById('skill_name').value,
         }),
         headers: {
@@ -76,9 +68,15 @@ save_skills.addEventListener('click', ()=>{
         return res.json()
     })
     .catch(error => console.log(error));
-})
+    })
+}
 
-fetch(document.location.origin + '/api/skills/', {
+
+let skill_all = document.querySelector('#skills_all')
+
+// вывод добавленных навыков пользователя
+if (skill_all) {
+    fetch(document.location.origin + '/api/skills/' + skill_all.getAttribute('id_prc'), {
     method: 'get',
     headers: {
         'Content-Type': 'application/json',
@@ -101,17 +99,16 @@ fetch(document.location.origin + '/api/skills/', {
 .catch(function(error) {
   console.log(error);
 });
+}
 
+//удаление навыка
 let div = document.querySelector('#skills_all')
-
-div.addEventListener('click', function (event){
+if(div) {
+    div.addEventListener('click', function (event){
     let skill = event.target
-    fetch(document.location.origin + '/api/delete_skill/'+skill.id,{
+    fetch(document.location.origin + '/api/delete_skill/'+skill.id + '/' + div.getAttribute('id_prc'),{
         method: 'delete',
         credentials: 'same-origin',
-        // body: JSON.stringify({
-        //     'pk': skill.id,
-        // }),
         headers: {
             'Content-Type':'application/json',
             'Accept': 'application/json',
@@ -122,4 +119,77 @@ div.addEventListener('click', function (event){
         return res.json()
     })
     .catch(error =>console.log(error));
+    })
+}
+
+
+
+
+// Добавление тэгов
+let save_tag = document.querySelector('#save_tag')
+if (save_tag) {
+    save_tag.addEventListener('click', ()=>{
+    fetch(document.location.origin + '/api/tag_add/',{
+        method: 'post',
+        credentials: 'same-origin',
+        body: JSON.stringify({
+            'id_project': document.querySelector('#tag_name').getAttribute('id_project'),
+            'name': document.querySelector('#tag_name').value,
+        }),
+        headers: {
+            'Content-Type':'application/json',
+            'Accept': 'application/json',
+            'X-CSRFToken':csrftoken,
+        }
+    }).then(function (res) {
+        console.log(res)
+        return res.json()
+    })
+    .catch(error => console.log(error));
 })
+}
+
+//Вывод тэгов проекта
+fetch(document.location.origin + '/api/tags/'+document.querySelector('#tag_all').getAttribute('id_prc'), {
+    method: 'get',
+    headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+    }
+})
+.then((resp) => resp.json())
+.then(function(data) {
+    for (let prop of data) {
+
+        let p = document.createElement('p')
+        p.className = "tag"
+        p.innerText = prop.name
+        p.id = prop.id
+        document.getElementById('tag_all').prepend(p)
+    }
+})
+.catch(function(error) {
+  console.log(error);
+});
+
+//удаление Тэга
+let div1 = document.querySelector('#tag_all')
+if(div1) {
+    div1.addEventListener('click', function (event){
+    let tag = event.target
+    fetch(document.location.origin + '/api/delete_tag/'+tag.id + '/' + document.querySelector('#tag_all').getAttribute('id_prc'),{
+        method: 'delete',
+        credentials: 'same-origin',
+        headers: {
+            'Content-Type':'application/json',
+            'Accept': 'application/json',
+            'X-CSRFToken':csrftoken,
+        }
+    }).then(function (res) {
+        console.log('ok')
+        return res.json()
+    })
+    .catch(error =>console.log(error));
+    })
+}
+

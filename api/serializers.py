@@ -6,6 +6,7 @@ class DateOfBirthSerializer(serializers.Serializer):
 
 
 class SkillAddSerializer(serializers.Serializer):
+    id_project = serializers.IntegerField()
     name = serializers.CharField(max_length=100)
 
 
@@ -14,4 +15,15 @@ class SkillAllSerializer(serializers.Serializer):
     name = serializers.CharField()
 
 
+class TagAddSerializer(serializers.Serializer):
+    id_project = serializers.IntegerField()
+    name = serializers.CharField(max_length=250)
 
+
+class TagAllSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    name = serializers.CharField()
+
+class TagDeleteSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    name = serializers.CharField()

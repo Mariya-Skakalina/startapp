@@ -24,7 +24,6 @@ class ProjectDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['account'] = self.request.account
-        print(self.kwargs)
         return context
 
 

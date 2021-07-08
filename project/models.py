@@ -1,7 +1,7 @@
 from django.db import models
 from django.urls import reverse
 
-from user.models import User, Skill
+from user.models import User
 
 
 # Модель категории
@@ -16,13 +16,26 @@ class Category(models.Model):
         return self.name
 
 
+# Модель тегов
+class Tag(models.Model):
+    name = models.CharField("Тег", max_length=254)
+
+    class Meta:
+        verbose_name = "Тег"
+        verbose_name_plural = "Теги"
+
+    def __str__(self):
+        return self.name
+
+
 # Модель проекта
 class Project(models.Model):
     name = models.CharField("Название проекта", max_length = 254)
     description = models.TextField("Описание проекта")
     category = models.ForeignKey(Category, verbose_name="Категория", on_delete=models.CASCADE)
-    teg = models.ManyToManyField(Skill, verbose_name="Теги", related_name="tags", blank=True)
+    tag = models.ManyToManyField(Tag, verbose_name="Теги", related_name="tags", blank=True)
     author = models.ForeignKey(User, verbose_name="Автор", on_delete=models.CASCADE, default=None, related_name="project_user")
+    is_in_search = models.BooleanField("Находится в поиске", default=None, blank=True, null=True)
 
     class Meta:
         verbose_name = "Проект"
